@@ -14,6 +14,7 @@ TYPES = {
 
 
 DATAPAGE = 'Участник:PtQa/Статистика отставания/data'
+GRAPHPAGE = 'Ky_kpm_kob_vys_stat.png'
 
 class WikiStats
   class << self
@@ -43,7 +44,7 @@ def main
   # Generate graph
   plot_graph
   # Upload graph
-  #upload_graph
+  upload_graph
 end
 
 def get_stats
@@ -61,6 +62,7 @@ def gen_url(name)
 end
 
 def plot_graph
+  File.delete('/tmp/result.png')
   system('gnuplot result.graph > /dev/null')
 end
 
@@ -73,7 +75,7 @@ def parse_old_stats
 end
 
 def merge_stats(new_stats, old_stats)
-  old_stats + format_stats(new_stats) + "\n"
+  old_stats + "\n" + format_stats(new_stats)
 end
 
 def format_stats(stats)
@@ -86,7 +88,11 @@ def save_stats(stats)
 end
 
 def update_stats(stats)
-  WikiStats.client.edit(appendtext: "\n"+format_stats(stats), title: DATAPAGE)
+  WikiStats.client.edit(appendtext: "\n"+format_stats(stats)+"\n", title: DATAPAGE, minor: true, summary: 'Automatic data update')
+end
+
+def upload_graph
+  WikiStats.client.upload_image(GRAPHPAGE, '/tmp/result.png', 'Automatic graph update', 'ignorewarnings')
 end
 
 pry.binding
