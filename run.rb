@@ -1,3 +1,6 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
 require 'sinatra'
 require 'rest-client'
 require 'json'
@@ -16,6 +19,9 @@ TYPES = {
 DATAPAGE = 'Участник:PtQa/Статистика отставания/data'
 GRAPHPAGE = 'Ky_kpm_kob_vys_stat.png'
 
+set :port, ENV['PORT']
+set :bind, '0.0.0.0'
+
 class WikiStats
   class << self
     attr_accessor :client
@@ -26,6 +32,10 @@ class WikiStats
 end
 
 get '/' do
+  'ok'
+end
+
+post '/' do
   main
 end
 
@@ -94,5 +104,3 @@ end
 def upload_graph
   WikiStats.client.upload_image(GRAPHPAGE, '/tmp/result.png', 'Automatic graph update', 'ignorewarnings')
 end
-
-pry.binding
