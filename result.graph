@@ -1,0 +1,15 @@
+set terminal png enhanced font "/usr/share/fonts/droid/DroidSans.ttf" size 1600, 1200 
+set yrange [0:]
+set xdata time
+set timefmt "%d.%m.%Y"
+set xrange ["23.11.2011":]
+set key top left 
+set grid xtics ytics mxtics mytics
+plot "/tmp/stat" using 1:2 smooth bezier lt 1 lw 10 linecolor rgbcolor "#FF0000" title "ВП:КУ"
+set output "/tmp/result.png"
+set multiplot
+replot "/tmp/stat" using 1:3 smooth bezier lt 3 lw 10 linecolor rgbcolor "#0000FF" title "ВП:КПМ"
+replot "/tmp/stat" using 1:4 smooth bezier lt 2 lw 10 linecolor rgbcolor "#008000" title "ВП:КОБ"
+replot "/tmp/stat" using 1:5 smooth bezier lt 4 lw 10 linecolor rgbcolor "#8A2BE2" title "ВП:ВУС" 
+replot "/tmp/stat" using 1:6 smooth bezier lt 10 lw 10 linecolor rgbcolor "#FFAA00"  title "ВП:КУЛ" 
+unset multiplot
