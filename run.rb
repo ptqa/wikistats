@@ -36,15 +36,21 @@ get '/' do
 end
 
 post '/' do
-  main
+  begin
+    main
+  ensure
+    return 'ok'
+  end
 end
 
 def main
+  puts 'Running main'
   WikiStats.client.log_in ENV['WIKI_USER'],ENV['WIKI_PASS']
   # Get current stats via API
   new_stats = get_stats.to_h
   # Load old stas for graph
   old_stats = load_old_stats
+  return if up2date? old_stats
   # Merge new and old
   stats = merge_stats(new_stats,old_stats)
   # Save to file
@@ -72,7 +78,7 @@ def gen_url(name)
 end
 
 def plot_graph
-  File.delete('/tmp/result.png')
+  File.delete('/tmp/result.png') if File.exists?('/tmp/result.png')
   system('gnuplot result.graph > /dev/null')
 end
 
@@ -103,4 +109,9 @@ end
 
 def upload_graph
   WikiStats.client.upload_image(GRAPHPAGE, '/tmp/result.png', 'Automatic graph update', 'ignorewarnings')
+end
+
+def up2date?(stats)
+  date = Time.now.strftime("%d.%m.%Y")
+  stats.include? date
 end
